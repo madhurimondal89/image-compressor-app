@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Shrink - Batch Image Compressor</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    
+    <style>
+        :root { --primary-color: #007bff; --success-color: #28a745; --danger-color: #dc3545; --light-gray: #f8f9fa; --medium-gray: #e9ecef; --dark-gray: #343a40; --font-family: 'Poppins', sans-serif; }
+        body { font-family: var(--font-family); background-color: var(--light-gray); color: var(--dark-gray); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 2rem; box-sizing: border-box; }
+        .container { background-color: white; padding: 2.5rem 3rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); width: 100%; max-width: 1200px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+        .header h1 { font-weight: 700; margin: 0; }
+        #reset-btn { background: none; border: 2px solid var(--medium-gray); color: #6c757d; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        #reset-btn:hover { border-color: var(--danger-color); color: var(--danger-color); background-color: #fff8f8; }
+        .upload-area { border: 2px dashed var(--medium-gray); padding: 3rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; }
+        .upload-area:hover { background-color: #f1f8ff; border-color: var(--primary-color); }
+        .upload-area ion-icon { font-size: 48px; color: var(--primary-color); }
+        .upload-area p { margin: 0; color: #6c757d; font-size: 1.1rem; text-align: center; }
+        #file-input { display: none; }
+        .main-content { margin-top: 2rem; }
+        .controls { background-color: var(--light-gray); padding: 1.5rem; border-radius: 12px; text-align: center; margin-bottom: 2rem; }
+        .controls label { font-size: 1.1rem; font-weight: 600; }
+        input[type="range"] { width: 100%; max-width: 400px; margin-top: 1rem; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+        .results-table th, .results-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--medium-gray); }
+        .results-table th { background-color: var(--light-gray); font-weight: 600; }
+        .results-table td img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; vertical-align: middle; margin-right: 10px; }
+        .status { font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 15px; font-size: 0.8rem; }
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-compressing { background-color: #d1ecf1; color: #0c5460; }
+        .status-done { background-color: #d4edda; color: #155724; }
+        .status-error { background-color: #f8d7da; color: #721c24; }
+        .download-cell a { font-weight: 600; color: var(--success-color); text-decoration: none; }
+        button { display: block; width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 600; color: white; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
+        #compress-btn { background-color: var(--primary-color); margin-top: 2rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Pixel Shrink</h1>
+        <button id="reset-btn" class="hidden">Start Over</button>
+    </div>
+
+    <label for="file-input" class="upload-area" id="upload-label">
+        <ion-icon name="images-outline"></ion-icon>
+        <p><strong>Click to Select Multiple Images</strong> or Drag & Drop</p>
+    </label>
+    <!-- multiple অ্যাট্রিবিউট যোগ করা হয়েছে -->
+    <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp" multiple>
+
+    <div class="main-content hidden" id="main-content">
+        <div class="controls">
+            <label for="quality-slider">Set Compression Quality for All Images: <strong id="quality-value">80</strong>%</label><br>
+            <input type="range" id="quality-slider" min="1" max="100" value="80">
+        </div>
+        
+        <div class="table-container">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Preview</th>
+                        <th>File Name</th>
+                        <th>Original Size</th>
+                        <th>Status</th>
+                        <th>Compressed Size</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody id="files-tbody">
+                    <!-- JS দিয়ে ফাইলগুলো এখানে যোগ করা হবে -->
+                </tbody>
+            </table>
+        </div>
+
+        <button id="compress-btn">Compress All Pending Images</button>
+    </div>
+</div>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script>
+    const { imageCompression } = window;
+    // DOM Elements
+    const fileInput=document.getElementById('file-input'),uploadLabel=document.getElementById('upload-label'),mainContent=document.getElementById('main-content'),qualitySlider=document.getElementById('quality-slider'),qualityValue=document.getElementById('quality-value'),filesTbody=document.getElementById('files-tbody'),compressBtn=document.getElementById('compress-btn'),resetBtn=document.getElementById('reset-btn');
+    
+    let fileQueue = [];
+
+    const formatBytes=(b,d=2)=>{if(!b||b===0)return'0 Bytes';const k=1024,i=Math.floor(Math.log(b)/Math.log(k));return parseFloat((b/Math.pow(k,i)).toFixed(d<0?0:d))+' '+['Bytes','KB','MB','GB'][i]};
+
+    const resetApp = () => {
+        fileQueue = [];
+        filesTbody.innerHTML = '';
+        fileInput.value = ''; // খুবই জরুরি
+        mainContent.classList.add('hidden');
+        uploadLabel.classList.remove('hidden');
+        resetBtn.classList.add('hidden');
+    };
+
+    const handleFileSelect = (files) => {
+        if (files.length === 0) return;
+        
+        for (const file of files) {
+            if (file.type.startsWith('image/')) {
+                const fileId = `file-${Date.now()}-${Math.random()}`;
+                fileQueue.push({ id: fileId, file: file, status: 'pending', originalSize: file.size });
+                addFileToUI(file, fileId);
+            }
+        }
+        
+        uploadLabel.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        resetBtn.classList.remove('hidden');
+    };
+
+    const addFileToUI = (file, fileId) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const row = document.createElement('tr');
+            row.id = fileId;
+            row.innerHTML = `
+                <td><img src="${e.target.result}" alt="${file.name}"></td>
+                <td>${file.name}</td>
+                <td>${formatBytes(file.size)}</td>
+                <td class="status-cell"><span class="status status-pending">Pending</span></td>
+                <td class="compressed-size-cell">N/A</td>
+                <td class="download-cell">N/A</td>
+            `;
+            filesTbody.appendChild(row);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const compressAllFiles = async () => {
+        compressBtn.textContent = 'Compressing... Please Wait';
+        compressBtn.disabled = true;
+        const quality = qualitySlider.value / 100;
+
+        for (const item of fileQueue) {
+            if (item.status !== 'pending') continue;
+
+            const row = document.getElementById(item.id);
+            const statusCell = row.querySelector('.status-cell');
+            const compressedSizeCell = row.querySelector('.compressed-size-cell');
+            const downloadCell = row.querySelector('.download-cell');
+
+            try {
+                statusCell.innerHTML = `<span class="status status-compressing">Compressing...</span>`;
+                const options = { maxSizeMB: 20, useWebWorker: true, initialQuality: quality };
+                
+                const compressedBlob = await imageCompression(item.file, options);
+                
+                // সুরক্ষা ব্যবস্থা: যদি নতুন সাইজ বড় হয়, মূল ফাইলটিই ব্যবহার করা হবে
+                const finalBlob = compressedBlob.size > item.originalSize ? item.file : compressedBlob;
+
+                statusCell.innerHTML = `<span class="status status-done">Done</span>`;
+                compressedSizeCell.textContent = formatBytes(finalBlob.size);
+                
+                const downloadUrl = URL.createObjectURL(finalBlob);
+                downloadCell.innerHTML = `<a href="${downloadUrl}" download="compressed_${item.file.name}">Download</a>`;
+                
+                item.status = 'done';
+
+            } catch (error) {
+                console.error(`Failed to compress ${item.file.name}:`, error);
+                statusCell.innerHTML = `<span class="status status-error">Error</span>`;
+                item.status = 'error';
+            }
+        }
+        compressBtn.textContent = 'Compress All Pending Images';
+        compressBtn.disabled = false;
+    };
+
+    // Event Listeners
+    qualitySlider.addEventListener('input', () => { qualityValue.textContent = qualitySlider.value; });
+    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files));
+    uploadLabel.addEventListener('dragover', (e) => e.preventDefault());
+    uploadLabel.addEventListener('drop', (e) => { e.preventDefault(); handleFileSelect(e.dataTransfer.files); });
+    compressBtn.addEventListener('click', compressAllFiles);
+    resetBtn.addEventListener('click', resetApp);
+
+</script>
+</body>
+</html>
