@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="icon.png" alt="App Icon" class="app-icon">
+            <h1>Image Compressor Pro</h1>
+            <!-- পরিবর্তন ১: এখানে ৫ এর বদলে ২০ করা হয়েছে -->
+            <p>Upload up to 20 images, adjust quality, and download them individually or all at once.</p>
+        </header>
+
+        <main>
+            <!-- Upload Area -->
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="file-input" accept="image/*" multiple hidden>
+                <img src="upload.png" alt="Upload Icon" class="upload-icon">
+                <!-- পরিবর্তন ২: এখানে Max 5 এর বদলে Max 20 করা হয়েছে -->
+                <p><strong>Drag & drop</strong> images here, or <strong>click to browse</strong> (Max 20).</p>
+                <small class="supported-formats">Supports JPEG, PNG, WebP, GIF and more</small>
+            </div>
+
+            <!-- File List Section -->
+            <div class="file-list-section" id="file-list-section" style="display: none;">
+                <div id="file-list">
+                    <!-- ফাইল আইটেমগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে যোগ করা হবে -->
+                </div>
+            </div>
+            
+            <!-- Quality Control Slider -->
+            <div class="quality-control" id="quality-control" style="display: none;">
+                <label for="quality-slider">Quality: <span id="quality-value">80%</span></label>
+                <input type="range" id="quality-slider" min="10" max="100" value="80" step="5">
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons" id="action-buttons" style="display: none;">
+                <button id="download-all-btn">Download All</button>
+                <button id="reset-btn" class="secondary">Compress More</button>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
