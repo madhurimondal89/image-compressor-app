@@ -3,49 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Compressor Pro</title>
+    
+    <!-- ========== SEO এবং Favicon পরিবর্তনগুলো এখানে করা হয়েছে ========== -->
+    <title>Image Compressor Pro - Compress JPG, PNG & WEBP Images</title>
+    <meta name="description" content="A fast, free, and client-side image compressor. Reduce the file size of up to 20 images at once. Adjust quality and download instantly without uploading to a server.">
+    <meta name="keywords" content="image compressor, compress image, image optimizer, reduce image size, jpg compressor, png compressor, client-side compressor">
+    <link rel="icon" type="image/png" href="icon.png">
+    <!-- =================================================================== -->
+    
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <img src="icon.png" alt="App Icon" class="app-icon">
-            <h1>Image Compressor Pro</h1>
-            <!-- পরিবর্তন ১: এখানে ৫ এর বদলে ২০ করা হয়েছে -->
-            <p>Upload up to 20 images, adjust quality, and download them individually or all at once.</p>
-        </header>
 
-        <main>
-            <!-- Upload Area -->
-            <div class="upload-area" id="upload-area">
-                <input type="file" id="file-input" accept="image/*" multiple hidden>
-                <img src="upload.png" alt="Upload Icon" class="upload-icon">
-                <!-- পরিবর্তন ২: এখানে Max 5 এর বদলে Max 20 করা হয়েছে -->
-                <p><strong>Drag & drop</strong> images here, or <strong>click to browse</strong> (Max 20).</p>
-                <small class="supported-formats">Supports JPEG, PNG, WebP, GIF and more</small>
+    <header class="site-header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <img src="logo.png" alt="ImageCompress Logo">
+            </a>
+            <nav class="main-nav">
+                <a href="https://www.imagecompress.in/" target="_blank">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="intro-text">
+                <h1>Image Compressor Pro</h1>
+                <p>Upload up to 20 images, adjust quality, and download them individually or all at once.</p>
             </div>
-
-            <!-- File List Section -->
-            <div class="file-list-section" id="file-list-section" style="display: none;">
-                <div id="file-list">
-                    <!-- ফাইল আইটেমগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে যোগ করা হবে -->
+    
+            <div class="content-wrapper">
+                <!-- Upload Area -->
+                <div class="upload-area" id="upload-area">
+                    <input type="file" id="file-input" accept="image/*" multiple hidden>
+                    <img src="upload.png" alt="Upload Icon" class="upload-icon">
+                    <p><strong>Drag & drop</strong> images here, or <strong>click to browse</strong> (Max 20).</p>
+                    <small class="supported-formats">Supports JPEG, PNG, WebP, GIF and more</small>
+                </div>
+    
+                <!-- File List Section -->
+                <div class="file-list-section" id="file-list-section" style="display: none;">
+                    <div id="file-list">
+                        <!-- ফাইল আইটেমগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে যোগ করা হবে -->
+                    </div>
+                </div>
+                
+                <!-- Quality Control Slider -->
+                <div class="quality-control" id="quality-control" style="display: none;">
+                    <label for="quality-slider">Quality: <span id="quality-value">80%</span></label>
+                    <input type="range" id="quality-slider" min="10" max="100" value="80" step="5">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons" id="action-buttons" style="display: none;">
+                    <button id="download-all-btn">Download All</button>
+                    <button id="reset-btn" class="secondary">Compress More</button>
                 </div>
             </div>
-            
-            <!-- Quality Control Slider -->
-            <div class="quality-control" id="quality-control" style="display: none;">
-                <label for="quality-slider">Quality: <span id="quality-value">80%</span></label>
-                <input type="range" id="quality-slider" min="10" max="100" value="80" step="5">
-            </div>
-            
-            <!-- Action Buttons -->
-            <div class="action-buttons" id="action-buttons" style="display: none;">
-                <button id="download-all-btn">Download All</button>
-                <button id="reset-btn" class="secondary">Compress More</button>
-            </div>
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p class="copyright">&copy; 2025 imagecompress.in All Rights Reserved.</p>
+            <nav class="footer-nav">
+                <a href="https://www.imagecompress.in/about-us/" target="_blank">About Us</a>
+                <a href="https://www.imagecompress.in/contact-us/" target="_blank">Contact Us</a>
+                <a href="https://www.imagecompress.in/disclaimer/" target="_blank">Disclaimer</a>
+                <a href="https://www.imagecompress.in/dmca-policy/" target="_blank">DMCA Policy</a>
+                <a href="https://www.imagecompress.in/privacy-policy/" target="_blank">Privacy Policy</a>
+                <a href="https://www.imagecompress.in/terms-and-conditions/" target="_blank">Terms and Conditions</a>
+            </nav>
+        </div>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
