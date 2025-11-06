@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- ========== SEO এবং Favicon পরিবর্তনগুলো এখানে করা হয়েছে ========== -->
     <title>Image Compressor Pro - Compress JPG, PNG & WEBP Images</title>
     <meta name="description" content="A fast, free, and client-side image compressor. Reduce the file size of up to 20 images at once. Adjust quality and download instantly without uploading to a server.">
     <meta name="keywords" content="image compressor, compress image, image optimizer, reduce image size, jpg compressor, png compressor, client-side compressor">
     <link rel="icon" type="image/png" href="icon.png">
-    <!-- =================================================================== -->
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8732458645979427"
+     crossorigin="anonymous"></script>
     
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -27,43 +28,154 @@
         </div>
     </header>
 
-    <main>
-        <div class="container">
-            <div class="intro-text">
-                <h1>Image Compressor Pro</h1>
-                <p>Upload up to 20 images, adjust quality, and download them individually or all at once.</p>
-            </div>
-    
-            <div class="content-wrapper">
-                <!-- Upload Area -->
-                <div class="upload-area" id="upload-area">
-                    <input type="file" id="file-input" accept="image/*" multiple hidden>
-                    <img src="upload.png" alt="Upload Icon" class="upload-icon">
-                    <p><strong>Drag & drop</strong> images here, or <strong>click to browse</strong> (Max 20).</p>
-                    <small class="supported-formats">Supports JPEG, PNG, WebP, GIF and more</small>
+    <div class="page-content">
+        <!-- বাম দিকের বিজ্ঞাপনের জায়গা -->
+        <aside class="ad-sidebar left-sidebar">
+            <!-- Image Compressor Pro l -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8732458645979427"
+                 data-ad-slot="2770008884"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </aside>
+
+        <!-- মাঝখানের মূল কন্টেন্ট -->
+        <main class="main-column">
+            <div class="container">
+                <div class="intro-text">
+                    <h1>Image Compressor Pro</h1>
+                    <p>Upload up to 20 images, adjust quality, and download them individually or all at once.</p>
                 </div>
-    
-                <!-- File List Section -->
-                <div class="file-list-section" id="file-list-section" style="display: none;">
-                    <div id="file-list">
-                        <!-- ফাইল আইটেমগুলো এখানে জাভাস্ক্রিপ্ট দিয়ে যোগ করা হবে -->
+        
+                <div class="content-wrapper">
+                    <!-- Upload Area -->
+                    <div class="upload-area" id="upload-area">
+                        <input type="file" id="file-input" accept="image/*" multiple hidden>
+                        <img src="upload.png" alt="Upload Icon" class="upload-icon">
+                        <p><strong>Drag & drop</strong> images here, or <strong>click to browse</strong> (Max 20).</p>
+                        <small class="supported-formats">Supports JPEG, PNG, WebP, GIF and more</small>
+                    </div>
+        
+                    <!-- File List Section -->
+                    <div class="file-list-section" id="file-list-section" style="display: none;">
+                        <div id="file-list"></div>
+                    </div>
+                    
+                    <!-- Quality Control Slider -->
+                    <div class="quality-control" id="quality-control" style="display: none;">
+                        <label for="quality-slider">Quality: <span id="quality-value">80%</span></label>
+                        <input type="range" id="quality-slider" min="10" max="100" value="80" step="5">
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-buttons" id="action-buttons" style="display: none;">
+                        <button id="download-all-btn">Download All</button>
+                        <button id="reset-btn" class="secondary">Compress More</button>
                     </div>
                 </div>
-                
-                <!-- Quality Control Slider -->
-                <div class="quality-control" id="quality-control" style="display: none;">
-                    <label for="quality-slider">Quality: <span id="quality-value">80%</span></label>
-                    <input type="range" id="quality-slider" min="10" max="100" value="80" step="5">
+            </div>
+
+            <!-- SEO সেকশন -->
+            <div class="seo-content-section">
+                <!-- আইটেম ১ -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>How to Compress Image</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="content-inner">
+                            <p>Compressing your images with our tool is simple and fast. Follow these easy steps:</p>
+                            <ol>
+                                <li><strong>Select Images:</strong> Click on the upload area or simply drag and drop your image files into the box. You can select up to 20 images at once.</li>
+                                <li><strong>Adjust Quality:</strong> Once your images are loaded, a quality slider will appear. Move the slider to set your desired compression level. A lower percentage means a smaller file size.</li>
+                                <li><strong>Wait for Compression:</strong> Compression starts automatically. You can see the progress for each file.</li>
+                                <li><strong>Download:</strong> After compression is complete, a "Download" button will appear for each image. You can also use the "Download All" button to get a ZIP file.</li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
-                
-                <!-- Action Buttons -->
-                <div class="action-buttons" id="action-buttons" style="display: none;">
-                    <button id="download-all-btn">Download All</button>
-                    <button id="reset-btn" class="secondary">Compress More</button>
+                <!-- আইটেম ২ -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Why Choose Our Online Image Compressor Pro</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="content-inner">
+                             <p>Our tool is designed to provide the best image compression experience. Here’s why we stand out:</p>
+                            <ul>
+                                <li><strong>Client-Side Compression:</strong> Your images are never uploaded to our servers. All compression happens in your browser, ensuring 100% privacy.</li>
+                                <li><strong>Batch Processing:</strong> Compress up to 20 images simultaneously, saving you valuable time.</li>
+                                <li><strong>Full Quality Control:</strong> The quality slider gives you precise control over the compression level.</li>
+                                <li><strong>Blazing Fast:</strong> No waiting for uploads. Compression is handled by your computer's processor.</li>
+                                <li><strong>Completely Free:</strong> Get professional-grade image compression without any cost.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- আইটেম ৩ -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Frequently Asked Questions (FAQ)</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                     <div class="accordion-content">
+                        <div class="content-inner">
+                            <h3>Is this image compressor free to use?</h3>
+                            <p>Yes, our online image compressor is completely free. There are no limits on the number of images you can compress.</p>
+                            <h3>Are my images secure?</h3>
+                            <p>Absolutely. Your privacy is our top priority. Our tool performs all compression tasks directly in your web browser. Your images are never sent or stored on our servers.</p>
+                            <h3>Does compressing an image reduce its quality?</h3>
+                            <p>Yes, to reduce file size, some image data is discarded (lossy compression). However, our tool allows you to control the quality, so you can achieve a significant reduction in file size (e.g., reduce image size in kb) while keeping the quality loss almost unnoticeable.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- আইটেম ৪ -->
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>A Guide to Image Compressor</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="content-inner">
+                            <p>In today's digital world, images are everywhere. From websites and blogs to social media and emails, high-quality visuals are essential. However, high-quality images often come with large file sizes, which can slow down website loading times. This is where an <strong>image compressor</strong> becomes an indispensable tool. This guide will walk you through everything you need to know about compressing images and how our powerful <strong>online image compressor</strong> can help you achieve optimal results.</p>
+                            <h3>What is Image Compression?</h3>
+                            <p>Image compression is the process of reducing the file size of a digital image without significantly degrading its visual quality. The primary goal is to <strong>reduce image size</strong> to make it easier to store, transmit, and display. Our tool primarily uses lossy compression, as it offers the best balance for web use.</p>
+                            <h3>Why Do You Need to Reduce Image Size?</h3>
+                            <p>The need to <strong>compress jpg online</strong> or other formats stems from critical factors that impact both users and website owners.</p>
+                            <p><strong>1. Faster Website Loading Speed and SEO:</strong> Website speed is a crucial ranking factor for Google. Large images are the single biggest contributor to slow page load times. By using a <strong>photo compressor</strong>, you can dramatically improve your site's performance and provide a better user experience, which helps your site rank higher. The ability to <strong>reduce image size in kb</strong> is essential for this.</p>
+                            <p><strong>2. Saving Storage and Bandwidth:</strong> A <strong>picture compressor</strong> helps you save valuable disk space and reduces bandwidth consumption. This is especially true if you need to <strong>reduce picture size in kb</strong> for specific platform requirements.</p>
+                            <h3>How to Use an Online Image Compressor Effectively</h3>
+                            <p>Using an <strong>online pic size reducer</strong> is straightforward. Our tool is designed to make this process simple. Understand the quality vs. size trade-off. A quality setting of 75-85% is often the perfect balance. It will significantly <strong>reduce jpg file size</strong> while keeping the image looking sharp.</p>
+                            <h3>Advanced Concepts: Resolution vs. Compression</h3>
+                            <p>Many people confuse reducing image size with reducing image resolution. A <strong>picture resolution reducer</strong> changes the dimensions of the image (e.g., from 4000x3000 to 800x600 pixels). In contrast, image compression keeps the dimensions the same but reduces the data required to display it. A <strong>jpeg size reducer</strong> focuses on this aspect. For best results, first resize your image, then compress it.</p>
+                            <h3>Conclusion: The Smart Way to Manage Your Images</h3>
+                            <p>Effectively managing image sizes is a necessity. Whether you need a <strong>jpg size compress</strong> tool, a way to <strong>reduce kb size of image</strong>, or a batch <strong>photo online size reducer</strong>, a powerful tool is essential. By providing fast, secure, and controllable client-side compression, our tool empowers you to optimize your images effortlessly. Stop letting large files slow you down. Start using our <strong>image compressor by size</strong> today and experience the difference.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+
+        <!-- ডান দিকের বিজ্ঞাপনের জায়গা -->
+        <aside class="ad-sidebar right-sidebar">
+            <!-- Image Compressor Pro r -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8732458645979427"
+                 data-ad-slot="5204600538"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </aside>
+    </div>
 
     <footer class="site-footer">
         <div class="footer-content">
@@ -80,5 +192,35 @@
     </footer>
 
     <script src="script.js"></script>
+    
+    <!-- ========== Accordion JavaScript এখানে যোগ করা হয়েছে ========== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    const isActive = header.classList.contains('active');
+
+                    // প্রথমে সব accordion বন্ধ করে দেওয়া হচ্ছে
+                    accordionHeaders.forEach(h => {
+                        h.classList.remove('active');
+                        h.nextElementSibling.style.maxHeight = null;
+                        h.querySelector('.accordion-icon').textContent = '+';
+                    });
+
+                    // যদি ক্লিক করা আইটেমটি আগে থেকে active না থাকে, তাহলে সেটিকে খোলা হচ্ছে
+                    if (!isActive) {
+                        header.classList.add('active');
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.textContent = '−'; // এটি একটি মাইনাস চিহ্ন
+                    }
+                });
+            });
+        });
+    </script>
+    <!-- ================================================================ -->
 </body>
 </html>
