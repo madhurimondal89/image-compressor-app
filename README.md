@@ -2,6 +2,8 @@
 
 A clean, responsive web application for client-side and server-side image compression. Built with Node.js, Express, and the Sharp image processing library.
 
+🌐 **Live Demo:** [https://image-compressor.imagecompress.in](https://image-compressor.imagecompress.in/)
+
 ---
 
 ## Highlights
