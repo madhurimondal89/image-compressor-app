@@ -32,13 +32,19 @@ uploadArea.addEventListener('drop', (e) => {
 });
 fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 function handleFiles(files) {
-    const fileArray = Array.from(files).filter(file => file.type.startsWith('image/'));
-    // পরিবর্তন: এখানে ৫ এর বদলে ২০ করা হয়েছে
-    if (fileArray.length > 20) {
+    const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+    if (imageFiles.length > 20) {
         alert('You can upload a maximum of 20 files at a time.');
         return;
     }
+    const oversized = imageFiles.filter(file => file.size > MAX_FILE_SIZE);
+    if (oversized.length > 0) {
+        alert(`Some files exceed the 10MB limit and were skipped: ${oversized.map(f => f.name).join(', ')}`);
+    }
+    const fileArray = imageFiles.filter(file => file.size <= MAX_FILE_SIZE);
     selectedFiles = fileArray;
     if (selectedFiles.length === 0) return;
     
@@ -98,7 +104,9 @@ async function updateAllPreviews(quality) {
             const response = await fetch('/preview', { method: 'POST', body: formData });
             if (!response.ok) throw new Error('Preview failed');
             const data = await response.json();
-            compressedSizeEl.textContent = formatBytes(data.compressedSize);
+            const savedPct = Math.round(((file.size - data.compressedSize) / file.size) * 100);
+            const pctText = savedPct > 0 ? ` (-${savedPct}%)` : '';
+            compressedSizeEl.textContent = `${formatBytes(data.compressedSize)}${pctText}`;
         } catch (error) {
             console.error(`Error processing ${file.name}:`, error);
             compressedSizeEl.textContent = 'Error';
