@@ -1,4 +1,3 @@
-// DOM এলিমেন্টগুলো (অপরিবর্তিত)
 const uploadArea = document.getElementById('upload-area');
 const fileInput = document.getElementById('file-input');
 const fileListSection = document.getElementById('file-list-section');
@@ -10,7 +9,11 @@ const actionButtons = document.getElementById('action-buttons');
 const downloadAllBtn = document.getElementById('download-all-btn');
 const resetBtn = document.getElementById('reset-btn');
 
+const MAX_FILES = 20;
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB per file (safe for browser memory)
+
 let selectedFiles = [];
+let compressedCache = new Map(); // index -> { quality, blob, filename }
 
 const formatBytes = (bytes, decimals = 2) => {
     if (!+bytes) return '0 Bytes';
@@ -21,9 +24,12 @@ const formatBytes = (bytes, decimals = 2) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
-// ফাইল ইনপুট ইভেন্ট (অপরিবর্তিত)
+// File input events
 uploadArea.addEventListener('click', () => fileInput.click());
-uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+});
 uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
 uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
@@ -32,39 +38,38 @@ uploadArea.addEventListener('drop', (e) => {
 });
 fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
 function handleFiles(files) {
     const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-    if (imageFiles.length > 20) {
-        alert('You can upload a maximum of 20 files at a time.');
+    if (imageFiles.length > MAX_FILES) {
+        alert(`You can upload a maximum of ${MAX_FILES} files at a time.`);
         return;
     }
+
     const oversized = imageFiles.filter(file => file.size > MAX_FILE_SIZE);
     if (oversized.length > 0) {
-        alert(`Some files exceed the 10MB limit and were skipped: ${oversized.map(f => f.name).join(', ')}`);
+        alert(`Some files exceed the 25MB limit and were skipped: ${oversized.map(f => f.name).join(', ')}`);
     }
-    const fileArray = imageFiles.filter(file => file.size <= MAX_FILE_SIZE);
-    selectedFiles = fileArray;
+
+    selectedFiles = imageFiles.filter(file => file.size <= MAX_FILE_SIZE);
     if (selectedFiles.length === 0) return;
-    
+
+    compressedCache.clear();
     uploadArea.style.display = 'none';
     fileListSection.style.display = 'block';
     qualityControl.style.display = 'block';
     actionButtons.style.display = 'flex';
-    
+
     renderFileList();
-    updateAllPreviews(qualitySlider.value);
+    updateAllPreviews(parseInt(qualitySlider.value, 10));
 }
 
-// renderFileList, updateAllPreviews, debounceTimer (সব অপরিবর্তিত)
 function renderFileList() {
     fileList.innerHTML = '';
     selectedFiles.forEach((file, index) => {
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
         fileItem.id = `file-item-${index}`;
-        
+
         fileItem.innerHTML = `
             <img class="file-item-thumbnail" id="thumbnail-${index}" src="" alt="thumbnail">
             <div class="file-item-details">
@@ -83,9 +88,105 @@ function renderFileList() {
         fileList.appendChild(fileItem);
 
         const reader = new FileReader();
-        reader.onload = (e) => { document.getElementById(`thumbnail-${index}`).src = e.target.result; };
+        reader.onload = (e) => {
+            const thumb = document.getElementById(`thumbnail-${index}`);
+            if (thumb) thumb.src = e.target.result;
+        };
         reader.readAsDataURL(file);
     });
+}
+
+function loadImage(file) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(img);
+        };
+        img.onerror = (err) => {
+            URL.revokeObjectURL(url);
+            reject(err);
+        };
+        img.src = url;
+    });
+}
+
+function canvasToBlob(canvas, mimeType, qualityRatio) {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(
+            (blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error('Canvas compression failed.'));
+            },
+            mimeType,
+            qualityRatio
+        );
+    });
+}
+
+/**
+ * Compress an image 100% client-side using HTML5 Canvas.
+ * Preserves JPEG, WebP, and transparent PNG formats.
+ */
+async function compressImageInBrowser(file, quality) {
+    const img = await loadImage(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const baseName = file.name.replace(/\.[^/.]+$/, '');
+    let outputMime = 'image/jpeg';
+    let ext = 'jpeg';
+
+    if (file.type === 'image/png') {
+        outputMime = 'image/png';
+        ext = 'png';
+
+        // Quantize color channels slightly based on quality so PNG DEFLATE compresses smaller
+        // while preserving alpha transparency.
+        if (quality < 100) {
+            const step = Math.max(2, Math.round((100 - quality) / 4));
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.round(data[i] / step) * step;
+                data[i + 1] = Math.round(data[i + 1] / step) * step;
+                data[i + 2] = Math.round(data[i + 2] / step) * step;
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+    } else if (file.type === 'image/webp') {
+        outputMime = 'image/webp';
+        ext = 'webp';
+    }
+
+    const qualityRatio = Math.min(1, Math.max(0.05, quality / 100));
+    let blob = await canvasToBlob(canvas, outputMime, qualityRatio);
+
+    // Never return a larger file than the original
+    if (blob.size >= file.size) {
+        blob = file;
+        ext = file.name.split('.').pop() || ext;
+    }
+
+    return {
+        blob,
+        filename: `${baseName}-q${quality}.${ext}`
+    };
+}
+
+async function getCompressedResult(index, quality) {
+    const cached = compressedCache.get(index);
+    if (cached && cached.quality === quality) {
+        return { blob: cached.blob, filename: cached.filename };
+    }
+    const result = await compressImageInBrowser(selectedFiles[index], quality);
+    compressedCache.set(index, { quality, ...result });
+    return result;
 }
 
 async function updateAllPreviews(quality) {
@@ -93,22 +194,18 @@ async function updateAllPreviews(quality) {
         const file = selectedFiles[i];
         const loader = document.getElementById(`loader-${i}`);
         const compressedSizeEl = document.getElementById(`compressed-size-${i}`);
-        
+        if (!loader || !compressedSizeEl) continue;
+
         loader.style.display = 'block';
         compressedSizeEl.textContent = 'Compressing...';
 
         try {
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('quality', quality);
-            const response = await fetch('/preview', { method: 'POST', body: formData });
-            if (!response.ok) throw new Error('Preview failed');
-            const data = await response.json();
-            const savedPct = Math.round(((file.size - data.compressedSize) / file.size) * 100);
-            const pctText = savedPct > 0 ? ` (-${savedPct}%)` : '';
-            compressedSizeEl.textContent = `${formatBytes(data.compressedSize)}${pctText}`;
+            const { blob } = await getCompressedResult(i, quality);
+            const savedPct = Math.round(((file.size - blob.size) / file.size) * 100);
+            const pctText = savedPct > 0 ? ` (-${savedPct}%)` : ' (0%)';
+            compressedSizeEl.textContent = `${formatBytes(blob.size)}${pctText}`;
         } catch (error) {
-            console.error(`Error processing ${file.name}:`, error);
+            console.error(`Error compressing ${file.name}:`, error);
             compressedSizeEl.textContent = 'Error';
         } finally {
             loader.style.display = 'none';
@@ -118,35 +215,13 @@ async function updateAllPreviews(quality) {
 
 let debounceTimer;
 qualitySlider.addEventListener('input', (e) => {
-    const quality = e.target.value;
+    const quality = parseInt(e.target.value, 10);
     qualityValue.textContent = `${quality}%`;
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         if (selectedFiles.length > 0) updateAllPreviews(quality);
-    }, 500);
+    }, 250);
 });
-
-// ডাউনলোড ফাংশনগুলো (অপরিবর্তিত)
-async function getCompressedBlob(file) {
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('quality', qualitySlider.value);
-    
-    const response = await fetch('/compress-single', { method: 'POST', body: formData });
-    if (!response.ok) {
-        throw new Error(`Failed to compress ${file.name}`);
-    }
-    
-    const blob = await response.blob();
-    const contentDisposition = response.headers.get('content-disposition');
-    let filename = `${file.name.split('.')[0]}-compressed.jpeg`;
-    if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+?)"/);
-        if (filenameMatch && filenameMatch.length > 1) filename = filenameMatch[1];
-    }
-    
-    return { blob, filename };
-}
 
 function triggerDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
@@ -162,18 +237,18 @@ function triggerDownload(blob, filename) {
 fileList.addEventListener('click', async (e) => {
     if (e.target && e.target.classList.contains('download-single-btn')) {
         const button = e.target;
-        const index = parseInt(button.dataset.index);
-        const file = selectedFiles[index];
+        const index = parseInt(button.dataset.index, 10);
+        const quality = parseInt(qualitySlider.value, 10);
 
         button.disabled = true;
         button.textContent = '...';
 
         try {
-            const { blob, filename } = await getCompressedBlob(file);
+            const { blob, filename } = await getCompressedResult(index, quality);
             triggerDownload(blob, filename);
         } catch (error) {
             console.error(error);
-            alert(`Could not download ${file.name}.`);
+            alert(`Could not download ${selectedFiles[index].name}.`);
         } finally {
             button.disabled = false;
             button.textContent = 'Download';
@@ -183,25 +258,25 @@ fileList.addEventListener('click', async (e) => {
 
 downloadAllBtn.addEventListener('click', async () => {
     if (selectedFiles.length === 0) return;
+    const quality = parseInt(qualitySlider.value, 10);
     downloadAllBtn.disabled = true;
     downloadAllBtn.textContent = 'Processing...';
 
     if ('showDirectoryPicker' in window) {
         try {
             const dirHandle = await window.showDirectoryPicker();
-            const savePromises = selectedFiles.map(async (file) => {
-                const { blob, filename } = await getCompressedBlob(file);
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const { blob, filename } = await getCompressedResult(i, quality);
                 const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
                 const writable = await fileHandle.createWritable();
                 await writable.write(blob);
                 await writable.close();
-            });
-            await Promise.all(savePromises);
+            }
             alert('All files downloaded successfully!');
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error("Error saving files:", error);
-                alert("An error occurred while saving the files.");
+                console.error('Error saving files:', error);
+                alert('An error occurred while saving the files.');
             }
         } finally {
             downloadAllBtn.disabled = false;
@@ -209,13 +284,13 @@ downloadAllBtn.addEventListener('click', async () => {
         }
     } else {
         alert("Your browser doesn't support direct folder access. Files will be downloaded one by one.");
-        for (const file of selectedFiles) {
+        for (let i = 0; i < selectedFiles.length; i++) {
             try {
-                const { blob, filename } = await getCompressedBlob(file);
+                const { blob, filename } = await getCompressedResult(i, quality);
                 triggerDownload(blob, filename);
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 400));
             } catch (error) {
-                console.error(`Failed to download ${file.name}`, error);
+                console.error(`Failed to download ${selectedFiles[i].name}`, error);
             }
         }
         downloadAllBtn.disabled = false;
@@ -223,17 +298,17 @@ downloadAllBtn.addEventListener('click', async () => {
     }
 });
 
-// রিসেট ফাংশন (অপরিবর্তিত)
 resetBtn.addEventListener('click', resetUI);
 
 function resetUI() {
     selectedFiles = [];
+    compressedCache.clear();
     fileInput.value = '';
     uploadArea.style.display = 'block';
     fileListSection.style.display = 'none';
     qualityControl.style.display = 'none';
     actionButtons.style.display = 'none';
-    
+
     qualitySlider.value = 80;
     qualityValue.textContent = '80%';
     fileList.innerHTML = '';

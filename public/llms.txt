@@ -1,18 +1,18 @@
 # Image Compressor Pro
 
-> Free online image compressor powered by Node.js and Sharp. Compress up to 20 images at once with adjustable quality, real-time size preview, and zero disk storage.
+> Free, 100% client-side online image compressor running directly in your browser. Compress up to 20 images at once with adjustable quality and zero server uploads.
 
 ## Overview
 
-- [Image Compressor Pro](https://image-compressor.imagecompress.in/): Main web application for batch image compression (supports JPEG, PNG, WebP, GIF, and other common formats).
+- [Image Compressor Pro](https://image-compressor.imagecompress.in/): Main web application for batch image compression (supports JPEG, PNG, WebP, and GIF).
 - [Source Code on GitHub](https://github.com/madhurimondal89/image-compressor-app): Open-source repository under the MIT License.
 
 ## Key Features
 
-- **Batch Compression**: Upload and process up to 20 images simultaneously via drag-and-drop or file picker.
-- **Adjustable Quality Slider**: Fine-tune compression quality from 10% to 100% with real-time compressed size previews.
-- **In-Memory Processing**: Images are processed in memory using Sharp and are never saved to disk or retained on the server.
-- **Flexible Downloads**: Download compressed images individually or save all files at once.
+- **100% Client-Side Privacy**: All image compression runs locally in the user's browser via HTML5 Canvas—files never leave the device.
+- **Batch Compression**: Compress up to 20 images simultaneously via drag-and-drop or file picker.
+- **Adjustable Quality Slider**: Fine-tune compression quality from 10% to 100% with instant compressed size previews.
+- **Format Preservation**: Preserves JPEG, WebP, and transparent PNG formats.
 
 ## Optional
 
